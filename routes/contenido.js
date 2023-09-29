@@ -46,8 +46,8 @@ router.get('/', async (req, res) => {
 /**
  * @description= Define una ruta GET a '/contenido/:id'.
  * @method= GET
- * @returns= Muestra el contenido a partir del id
- * @param {integer} :id type - id de contenido
+ * @returns= Muestra el contenido a partir del id.
+ * @param {integer} :id type - id de contenido.
  */
 router.get('/contenido/:id', async (req, res) => {
     const ID = Number(req.params.id);
@@ -77,8 +77,8 @@ router.get('/contenido/:id', async (req, res) => {
 /**
  * @description= Define una ruta GET a '/genero/:genero'.
  * @method= GET
- * @returns= Lista los contenidos por genero
- * @param {string} :genero - nombre del género
+ * @returns= Lista los contenidos por genero.
+ * @param {string} :genero - nombre del género.
 */
 router.get('/genero/:genero', async (req, res) => {
     const gen = req.params.genero;
@@ -107,8 +107,8 @@ router.get('/genero/:genero', async (req, res) => {
 /**
  * @description= Define una ruta GET a '/categoria/:categoria'.
  * @method= GET
- * @returns=Lista contenidos por categoría.
- * @param {string} :categoria - nombre de la categoría
+ * @returns= Lista contenidos por categoría.
+ * @param {string} :categoria - nombre de la categoría.
  */
 router.get('/categoria/:categoria', async (req, res) => {
     const cat = req.params.categoria;
@@ -168,20 +168,22 @@ router.get('/nombre/:nombre', async (req, res) => {
 /**
  * @description= Define una ruta GET a '/actores/:idContenido'
  * @method= GET
- * @returns= Lista el reparto del contenido
- * @param {string} :idContenido - id del contenido
+ * @returns= Lista el reparto del contenido.
+ * @param {string} :idContenido - id del contenido.
  */
 router.get('/actores/:idContenido', async (req, res) => {
     const ID = Number(req.params.idContenido);
+    if (isNaN(ID)) {
+        res.status(400).send({ message: 'El id tiene que ser un numero'});
+        return;
+    }
     try {
-        const { rows } = await Contenido.findByPk(ID, {attributes: ['titulo'],
+        const cont = await Contenido.findByPk(ID, {attributes: ['titulo'],
             include: [{ model: Actricesyactores, as: 'actor', attributes: ['nombre'], through: { attributes: [] }}]});
-        console.log(rows);
-        const movies = rows;
-        if (movies === null) {
+        if (cont === null) {
             res.status(400).send(messageError2);
         } else {
-            res.status(200).send(movies);
+            res.status(200).send(cont);
         }
     } catch (error) {
         console.log(error.message);
