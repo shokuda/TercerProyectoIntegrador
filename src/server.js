@@ -4,17 +4,17 @@ const express = require('express');
 const server = express();
 const sequelize = require('./conection/conection');
 require('../modelos/index');
-const contenidos = require('../routes/catalogo');
+const contenidos = require('../routes/contenido');
 
 // Middlewares
 
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
-server.use('/api', contenidos);
+server.use('/catalogo', contenidos);
 
 // Control de rutas inexistentes
 server.use('*', (req, res) => {
-    res.status(404).send();
+    res.status(404).send('Error 404, La url indicada no pertenece a este sitio');
 });
 sequelize.authenticate().then(() => {
     sequelize.sync({ force: false }).then(() => {

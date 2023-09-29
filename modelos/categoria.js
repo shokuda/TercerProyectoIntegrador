@@ -14,7 +14,7 @@ const Categoria = sequelize.define('categorias', {
     }
 }, {
     sequelize,
-    modelName: 'categorias',
+    tableName: 'categorias',
     timestamps: false
 });
 

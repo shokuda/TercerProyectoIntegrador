@@ -1,37 +1,41 @@
-const Catalogo = require('./catalogos');
+const Contenido = require('./contenidos');
 const Genero = require('./generos');
 const Categoria = require('./categoria');
-const CatalogoGenero = require('./catalogo_generos');
-const CatalogoReparto = require('./catalogo_repartos');
+const ContenidoGenero = require('./contenido_generos');
+const ContenidoReparto = require('./contenido_repartos');
 const Actricesyactores = require('./actricesyactores');
 
+// Relacion one-to-many entre Contenido y Categoria
+Categoria.hasMany(Contenido, { foreignKey: 'idCategoria' });
+Contenido.belongsTo(Categoria, { foreignKey: 'idCategoria' });
 
-// Relacion one-to-many entre Catalogo y Genero
-Catalogo.hasMany(Genero);
-Genero.belongsTo(Catalogo);
-
-// Relacion one-to-many entre Catalogo y Categoria
-Categoria.hasMany(Catalogo, { foreignKey: 'idCategoria' });
-Catalogo.belongsTo(Categoria, { foreignKey: 'idCategoria' });
-
-// Relacion many-to-many entre Catalogo y Genero a travez de CatalogoGenero
-Catalogo.belongsToMany(Genero, {
-    through: CatalogoGenero,
-    foreignKey: 'idCatalogo'
+// Relacion many-to-many entre Contenido y Genero a travez de ContenidoGenero
+Contenido.belongsToMany(Genero, {
+    through: { model: ContenidoGenero, unique: false },
+    foreignKey: 'idContenido',
+    otherKey: 'idGenero',
+    as: 'generos'
 });
-Genero.belongsToMany(Catalogo, {
-    through: CatalogoGenero,
-    foreignKey: 'idCatalogo'
-});
+Genero.belongsToMany(Contenido, {
+    through: { model: ContenidoGenero, unique: false },
+    foreignKey: 'idGenero',
+    otherKey: 'idContenido',
+    as: 'cont_gen'
 
-// Relacion many-to-many entre Catalogo y Actricesyactores a travez de CatalogoReparto
-Catalogo.belongsToMany(Actricesyactores, {
-    through: CatalogoReparto,
-    foreignKey: 'idCatalogo'
-});
-Actricesyactores.belongsToMany(Catalogo, {
-    through: CatalogoReparto,
-    foreignKey: 'idCatalogo'
 });
 
-module.exports = { Catalogo, Genero, Categoria, CatalogoGenero, CatalogoReparto, Actricesyactores };
+// Relacion many-to-many entre Contenido y Actricesyactores a travez de ContenidoReparto
+Contenido.belongsToMany(Actricesyactores, {
+    through: { model: ContenidoReparto, unique: false },
+    foreignKey: 'idContenido',
+    otherKey: 'idActor',
+    as: 'actor'
+});
+Actricesyactores.belongsToMany(Contenido, {
+    through: { model: ContenidoReparto, unique: false },
+    foreignKey: 'idActor',
+    otherKey: 'idContenido',
+    as: 'cont_act'
+});
+
+module.exports = { Contenido, Genero, Categoria, ContenidoGenero, ContenidoReparto, Actricesyactores };

@@ -2,24 +2,24 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../src/conection/conection');
 
-
-const CatalogoGenero = sequelize.define('catalogo_generos', {
-    idCatalogoGenero: {
+const ContenidoReparto = sequelize.define('contenido_repartos', {
+    idContenidoReparto: {
         type: DataTypes.INTEGER(10),
         primaryKey: true,
         autoIncrement: true
     },
-    idCatalogo: {
+    idContenido: {
         type: DataTypes.INTEGER(10),
         allowNull: false
     },
-    idGenero: {
+    idActor: {
         type: DataTypes.INTEGER(10),
         allowNull: false
     }
 }, {
     sequelize,
-    modelName: 'catalogo_generos',
+    tableName: 'contenido_repartos',
     timestamps: false
 });
-module.exports = CatalogoGenero;
+
+module.exports = ContenidoReparto;

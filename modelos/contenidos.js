@@ -1,11 +1,10 @@
 /* eslint-disable new-cap */
 const { DataTypes } = require('sequelize');
 const sequelize = require('../src/conection/conection');
-const path = require('path');
-const pathPoster = path.join(__dirname, '../img');
+const pathPoster = `http://${process.env.HOST}:${process.env.PORT}/img/`;
 
-const Catalogos = sequelize.define('catalogos', {
-    idCatalogo: {
+const Contenidos = sequelize.define('contenidos', {
+    idContenido: {
         type: DataTypes.INTEGER(10),
         primaryKey: true,
         allowNull: false,
@@ -40,8 +39,8 @@ const Catalogos = sequelize.define('catalogos', {
     }
 }, {
     sequelize,
-    modelName: 'catalogos',
+    tableName: 'contenidos',
     timestamps: false
 });
 
-module.exports = Catalogos;
+module.exports = Contenidos;

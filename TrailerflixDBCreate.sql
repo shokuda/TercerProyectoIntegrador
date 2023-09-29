@@ -1,88 +1,96 @@
 DROP SCHEMA IF EXISTS `Trailerflix` ;
 CREATE SCHEMA IF NOT EXISTS `Trailerflix` ;
 USE `Trailerflix` ;
-
-DROP TABLE IF EXISTS `actricesyactores` ;
+DROP TABLE IF EXISTS `Trailerflix`.`actricesyactores` ;
 
 CREATE TABLE IF NOT EXISTS `Trailerflix`.`actricesyactores` (
   `idActor` INT NOT NULL AUTO_INCREMENT,
   `nombre` VARCHAR(50) NOT NULL,
   PRIMARY KEY (`idActor`),
-  UNIQUE KEY `idActor`
-) ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+  UNIQUE INDEX `idActor` (`idActor` ASC) VISIBLE)
+ENGINE = InnoDB;
 
-DROP TABLE IF EXISTS `generos` ;
+DROP TABLE IF EXISTS `Trailerflix`.`generos` ;
 
 CREATE TABLE IF NOT EXISTS `Trailerflix`.`generos` (
   `idGenero` INT NOT NULL AUTO_INCREMENT,
   `nombreGenero` VARCHAR(50) NOT NULL,
   PRIMARY KEY (`idGenero`),
-  UNIQUE KEY `idGenero`
-) ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+  UNIQUE INDEX `idGenero` (`idGenero` ASC) VISIBLE)
+ENGINE = InnoDB;
 
-DROP TABLE IF EXISTS `categorias` ;
+DROP TABLE IF EXISTS `Trailerflix`.`categorias` ;
 
-CREATE TABLE IF NOT EXISTS `categorias` (
+CREATE TABLE IF NOT EXISTS `Trailerflix`.`categorias` (
   `idCategoria` INT NOT NULL AUTO_INCREMENT,
   `nombreCategoria` VARCHAR(50) NOT NULL,
   PRIMARY KEY (`idCategoria`),
-  UNIQUE KEY `idCategoria`
-  )
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+  UNIQUE INDEX `idCategoria` (`idCategoria` ASC) VISIBLE)
+ENGINE = InnoDB;
 
-DROP TABLE IF EXISTS `catalogos` ;
+DROP TABLE IF EXISTS `Trailerflix`.`contenidos` ;
 
-CREATE TABLE IF NOT EXISTS `catalogos` (
-  `idCatalogo` INT NOT NULL AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS `Trailerflix`.`contenidos` (
+  `idContenido` INT NOT NULL AUTO_INCREMENT,
   `poster` VARCHAR(80) NOT NULL,
   `titulo` VARCHAR(80) NOT NULL,
   `temporadas` VARCHAR(3) NOT NULL,
   `resumen` TEXT NOT NULL,
   `trailer` VARCHAR(120) NOT NULL,
   `idCategoria` INT NOT NULL,
-  PRIMARY KEY (`idCatalogo`),
-  UNIQUE KEY `idCatalogo`,
-  FOREIGN KEY (idCategoria) REFERENCES categorias(idCategoria)
-  )
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+  PRIMARY KEY (`idContenido`),
+  UNIQUE INDEX `idContenido` (`idContenido` ASC) VISIBLE,
+  INDEX `fk_contenido_categorias_idx` (`idCategoria` ASC) VISIBLE,
+  CONSTRAINT `fk_contenido_categorias`
+    FOREIGN KEY (`idCategoria`)
+    REFERENCES `Trailerflix`.`categorias` (`idCategoria`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
 
-DROP TABLE IF EXISTS `catalogo_generos` ;
+DROP TABLE IF EXISTS `Trailerflix`.`contenido_generos` ;
 
-CREATE TABLE IF NOT EXISTS `catalogo_generos` (
-  `idCatalogoGenero` INT NOT NULL AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS `Trailerflix`.`contenido_generos` (
+  `idContenidoGenero` INT NOT NULL AUTO_INCREMENT,
   `idGenero` INT NOT NULL,
-  `idCatalogo` INT NOT NULL,
-  PRIMARY KEY (`idCatalogoGenero`, `idGenero`, `idCatalogo`),
-  UNIQUE KEY `idCatalogoGenero`,
-  FOREIGN KEY (idCatalogo) REFERENCES catalogos(idCatalogo),
-  FOREIGN KEY (idGenero) REFERENCES generos(idGenero)
-  )
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+  `idContenido` INT NOT NULL,
+  PRIMARY KEY (`idContenidoGenero`, `idGenero`, `idContenido`),
+  UNIQUE INDEX `idContenidoGenero` (`idContenidoGenero` ASC) VISIBLE,
+  INDEX `fk_Contenido_generos_generos1_idx` (`idGenero` ASC) VISIBLE,
+  INDEX `fk_Contenido_generos_contenido1_idx` (`idContenido` ASC) VISIBLE,
+  CONSTRAINT `fk_Contenido_generos_generos1`
+    FOREIGN KEY (`idGenero`)
+    REFERENCES `Trailerflix`.`generos` (`idGenero`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Contenido_generos_contenido1`
+    FOREIGN KEY (`idContenido`)
+    REFERENCES `Trailerflix`.`contenidos` (`idContenido`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
 
-DROP TABLE IF EXISTS `catalogo_repartos` ;
+DROP TABLE IF EXISTS `Trailerflix`.`contenido_repartos` ;
 
-CREATE TABLE IF NOT EXISTS `catalogo_repartos` (
-  `idCatalogoReparto` INT NOT NULL AUTO_INCREMENT,
-  `idCatalogo` INT NOT NULL,
+CREATE TABLE IF NOT EXISTS `Trailerflix`.`contenido_repartos` (
+  `idContenidoReparto` INT NOT NULL AUTO_INCREMENT,
+  `idContenido` INT NOT NULL,
   `idActor` INT NOT NULL,
-  PRIMARY KEY (`idCatalogoReparto`, `idCatalogo`, `idActor`),
-  UNIQUE KEY `idCatalogoReparto`,
-  FOREIGN KEY (idCatalogo) REFERENCES catalogos(idCatalogo),
-  FOREIGN KEY (idActor) REFERENCES actricesyactores(idActor)
-  )
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+  PRIMARY KEY (`idContenidoReparto`, `idContenido`, `idActor`),
+  UNIQUE INDEX `idContenidoReparto` (`idContenidoReparto` ASC) VISIBLE,
+  INDEX `fk_Contenido_repartos_contenido1_idx` (`idContenido` ASC) VISIBLE,
+  INDEX `fk_Contenido_repartos_actricesyactores1_idx` (`idActor` ASC) VISIBLE,
+  CONSTRAINT `fk_Contenido_repartos_contenido1`
+    FOREIGN KEY (`idContenido`)
+    REFERENCES `Trailerflix`.`contenidos` (`idContenido`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Contenido_repartos_actricesyactores1`
+    FOREIGN KEY (`idActor`)
+    REFERENCES `Trailerflix`.`actricesyactores` (`idActor`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
 
 INSERT INTO `categorias` (`idCategoria`, `nombreCategoria`) VALUES  
 (1, "serie"),
@@ -321,7 +329,7 @@ INSERT INTO `generos` (`idGenero`, `nombreGenero`) VALUES
 (19, "Intriga"),
 (20, "¿Ficción?");
 
-INSERT INTO `catalogos` (`idCatalogo`, `idCategoria`, `poster`, `titulo`, `temporadas`, `resumen`, `trailer`) VALUES 
+INSERT INTO `contenidos` (`idContenido`, `idCategoria`, `poster`, `titulo`, `temporadas`, `resumen`, `trailer`) VALUES 
 (3, 1, "/posters/3.jpg", "The Mandalorian", "2", "Ambientada tras la caída del Imperio y antes de la aparición de la Primera Orden, la serie sigue los pasos de un pistolero solitario en las aventuras que protagoniza en los confines de la galaxia, donde no alcanza la autoridad de la Nueva República.", "https://www.youtube.com/embed/aOC8E8z_ifw"),
 (4, 1, "/posters/4.jpg", "The Umbrella Academy", "1", "La muerte de su padre reúne a unos hermanos distanciados y con extraordinarios poderes que descubren impactantes secretos y una amenaza que se cierne sobre la humanidad.", ""),
 (5, 1, "/posters/5.jpg", "Gambito de Dama", "1", "En los cincuenta, una joven de un orfanato descubre que tiene un increíble don para el ajedrez y recorre el arduo camino a la fama mientras lucha contra las adicciones.", ""),
@@ -358,7 +366,7 @@ INSERT INTO `catalogos` (`idCatalogo`, `idCategoria`, `poster`, `titulo`, `tempo
 (34, 2, "/posters/34.jpg", "El primer hombre en la luna", "N/A", "Cuenta la historia de la misión de la NASA que llevó al primer hombre a la luna, centrada en Neil Armstrong (interpretado por Ryan Gosling) y el periodo comprendido entre los años 1961 y 1969. Un relato en primera persona, basado en la novela de James R. Hansen, que explora el sacrificio y el precio que representó, tanto para Armstrong como para Estados Unidos, una de las misiones más peligrosas de la historia.", ""),
 (35, 2, "/posters/35.jpg", "Titanes del pacífico - La insurrección", "N/A", "Han pasado 10 años tras la primera invasión que sufrió la humanidad, pero la lucha aún no ha terminado. El planeta vuelve a ser asediado por los Kaiju, una raza de alienígenas colosales, que emergen desde un portal interdimensional con el objetivo de destruir a la raza humana. Ante esta nueva amenaza, los Jaegers, robots gigantes de guerra pilotados por dos personas para sobrellevar la inmensa carga neuronal que conlleva manipularlos, ya no están a la altura de lo que se les viene encima. Será entonces cuando los supervivientes de la primera invasión, además de nuevos personajes como el hijo de Pentecost, tendrán que idear la manera de sorprender al enorme enemigo, apostando por nuevas estrategias defensivas y de ataque. Con la Tierra en ruinas e intentando reconstruirse, esta nueva batalla puede ser decisiva para el futuro.", "");
 
-INSERT INTO `catalogo_generos` (`idCatalogoGenero`, `idCatalogo`, `idGenero`) VALUES 
+INSERT INTO `contenido_generos` (`idContenidoGenero`, `idContenido`, `idGenero`) VALUES 
 (1, 3, 1),
 (2, 3, 2),
 (3, 4, 1),
@@ -456,7 +464,7 @@ INSERT INTO `catalogo_generos` (`idCatalogoGenero`, `idCatalogo`, `idGenero`) VA
 (95, 35, 2),
 (96, 35, 11);
 
-INSERT INTO `catalogo_repartos` (`idCatalogoReparto`, `idCatalogo`, `idActor`) VALUES 
+INSERT INTO `contenido_repartos` (`idContenidoReparto`, `idContenido`, `idActor`) VALUES 
 (1, 3, 1),
 (2, 3, 2),
 (3, 3, 3),
@@ -672,3 +680,23 @@ INSERT INTO `catalogo_repartos` (`idCatalogoReparto`, `idCatalogo`, `idActor`) V
 (213, 35, 207),
 (214, 35, 208),
 (215, 35, 209);
+
+USE Trailerflix;
+CREATE VIEW view_contenido AS
+SELECT 
+	c.idContenido AS id,
+	CONCAT('https://localhost:3000/img', c.poster) AS poster,
+    c.titulo AS titulo,
+    ca.nombreCategoria AS categoria,
+    GROUP_CONCAT( DISTINCT g.nombreGenero SEPARATOR ', ') AS genero,
+    c.resumen AS resumen,
+    c.temporadas AS temporadas,
+    GROUP_CONCAT( DISTINCT act.nombre SEPARATOR ', ') AS reparto,
+    c.trailer AS trailer 
+    FROM contenidos c
+    JOIN categorias ca ON c.idCategoria= ca.idCategoria
+    left JOIN contenido_repartos cr ON c.idContenido = cr.idContenido
+    left JOIN actricesyactores act ON cr.idActor = act.idActor
+    left JOIN contenido_generos cg ON c.idContenido = cg.idContenido
+    left JOIN generos g ON g.idGenero = cg.idGenero
+    GROUP BY c.idContenido;

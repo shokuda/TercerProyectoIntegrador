@@ -14,7 +14,7 @@ const Actricesyactores = sequelize.define('actricesyactores', {
     }
 }, {
     sequelize,
-    modelName: 'actricesyactores',
+    tableName: 'actricesyactores',
     timestamps: false
 });
 
