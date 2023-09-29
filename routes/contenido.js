@@ -2,19 +2,25 @@ const express = require('express');
 // eslint-disable-next-line new-cap
 const router = express.Router();
 
-const { Contenido, Categoria, Genero, Actricesyactores} = require('../modelos/index');
+const { Contenido, Categoria, Genero, Actricesyactores} = require('../models/index');
 const sequelize = require('../src/conection/conection');
 
 const { Op } = require('sequelize');
 const messageErrorServer = JSON.stringify({ message: 'Se ha generado un error en el servidor' });
 const messageError2 = JSON.stringify({ message: 'El dato no se corresponde a un contenido'});
 
+
+/**
+ * @description= Define una ruta GET a la dirección raiz ("/").
+ * @method= GET
+ * @returns= Devuelve la vista de todos los elementos.
+ */
 router.get('/', async (req, res) => {
     try {
         const sql = `
         SELECT 
         c.idContenido AS id,
-        CONCAT('https://localhost:3000/img', c.poster) AS poster,
+        CONCAT('http://${process.env.HOST}:${process.env.PORT}/img', c.poster) AS poster,
         c.titulo AS titulo,
         ca.nombreCategoria AS categoria,
         GROUP_CONCAT( DISTINCT g.nombreGenero SEPARATOR ', ') AS genero,
@@ -37,6 +43,12 @@ router.get('/', async (req, res) => {
     }
 });
 
+/**
+ * @description= Define una ruta GET a '/contenido/:id'.
+ * @method= GET
+ * @returns= Muestra el contenido a partir del id
+ * @param {integer} :id type - id de contenido
+ */
 router.get('/contenido/:id', async (req, res) => {
     const ID = Number(req.params.id);
     if (isNaN(ID)) {
@@ -62,13 +74,18 @@ router.get('/contenido/:id', async (req, res) => {
     }
 });
 
-
+/**
+ * @description= Define una ruta GET a '/genero/:genero'.
+ * @method= GET
+ * @returns= Lista los contenidos por genero
+ * @param {string} :genero - nombre del género
+*/
 router.get('/genero/:genero', async (req, res) => {
     const gen = req.params.genero;
-    // if (!name) {
-    //     res.status(403).send({ message: 'Debe ingresar el nombre de la serie o pelicula'});
-    //     return;
-    // }
+    if (!gen) {
+        res.status(403).send({ message: 'Debe ingresar el nombre de la serie o pelicula'});
+        return;
+    }
     try {
         const movies = await Contenido.findAll({attributes: ['idContenido', 'titulo', 'temporadas', 'poster', 'resumen', 'trailer'],
             include: [
@@ -76,7 +93,7 @@ router.get('/genero/:genero', async (req, res) => {
                 { model: Categoria, attributes: ['nombreCategoria'] },
                 { model: Genero, as: 'generos', attributes: ['nombreGenero'], where: {nombreGenero: gen}, through: { attributes: [] }}
             ] });
-        if (movies === null) {
+        if (movies.length === 0) {
             res.status(400).send(messageError2);
         } else {
             res.status(200).send(movies);
@@ -87,10 +104,16 @@ router.get('/genero/:genero', async (req, res) => {
     }
 });
 
+/**
+ * @description= Define una ruta GET a '/categoria/:categoria'.
+ * @method= GET
+ * @returns=Lista contenidos por categoría.
+ * @param {string} :categoria - nombre de la categoría
+ */
 router.get('/categoria/:categoria', async (req, res) => {
     const cat = req.params.categoria;
     if (!cat) {
-        res.status(403).send({ message: 'Debe ingresar el nomobre de la serie o pelicula'});
+        res.status(403).send({ message: 'Debe ingresar el nombre de la serie o pelicula'});
         return;
     }
     try {
@@ -111,6 +134,12 @@ router.get('/categoria/:categoria', async (req, res) => {
     }
 });
 
+/**
+ * @description= Define una ruta GET a '/nombre/:nombre'.
+ * @method= GET
+ * @returns= Lista por nombre de contenido o parte del nombre.
+ * @param {string} :nombre - nombre del contenido
+ */
 router.get('/nombre/:nombre', async (req, res) => {
     const name = req.params.nombre;
     if (!name) {
@@ -136,6 +165,12 @@ router.get('/nombre/:nombre', async (req, res) => {
     }
 });
 
+/**
+ * @description= Define una ruta GET a '/actores/:idContenido'
+ * @method= GET
+ * @returns= Lista el reparto del contenido
+ * @param {string} :idContenido - id del contenido
+ */
 router.get('/actores/:idContenido', async (req, res) => {
     const ID = Number(req.params.idContenido);
     try {
@@ -154,6 +189,11 @@ router.get('/actores/:idContenido', async (req, res) => {
     }
 });
 
+/**
+ * @description= Define una ruta GET a '/categorias'.
+ * @method= GET
+ * @returns= Lista todas las categorias.
+ */
 router.get('/categorias', async (req, res) => {
     try {
         const results = await Categoria.findAll({ attributes: ['nombreCategoria']});
@@ -164,5 +204,8 @@ router.get('/categorias', async (req, res) => {
     }
 });
 
+/**
+ * @description= Exporta el modulo router
+ */
 module.exports = router;
 
